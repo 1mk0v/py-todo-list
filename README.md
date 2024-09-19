@@ -16,9 +16,15 @@
 * Разработка функционала календаря для установки сроков выполнения задач.
 * Подготовка документации по использованию системы.
 
-## Entity-Relationship Model
+## Entity-Relationship Models
 
-![plot](./public/DB-ER-model.png)
+### Проекты
+
+![plot](./public/ER-model-projects.png)
+
+### Пользователи
+
+![plot](./public/ER-model-users.png)
 
 ## Настройка
 
@@ -31,7 +37,7 @@
 
    DB_USER=user_name
    DB_PSWD=your_password
-   DB_HOST=host.sirena-travel.ru
+   DB_HOST=host
    DB_PORT=5432
    DB_NAME=db_name
    ```
