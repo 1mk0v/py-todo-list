@@ -1,5 +1,5 @@
 from .settings import Settings
-from sqlalchemy import Table, MetaData, Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Table, MetaData, Column, String, Integer, DateTime, ForeignKey, Boolean
 import logging 
 
 logger = logging.getLogger('uvicorn.error')
@@ -18,10 +18,12 @@ projects = Table(
     "projects",
     metadata,
     Column('id', Integer, primary_key=True),
-    Column('title', String),
+    Column('title', String, unique=True),
     Column('description', String),
     Column('status_id', Integer, ForeignKey('statuses.id'), server_default="1"),
-    Column('deadline', DateTime)
+    Column('deadline', DateTime),
+    Column('user', String),
+    Column('is_deleted', Boolean, default=False)
 )
 
 tasks = Table(
@@ -32,7 +34,9 @@ tasks = Table(
     Column('title', String),
     Column('description', String),
     Column('status_id', Integer, ForeignKey('statuses.id')),
-    Column('deadline', DateTime)
+    Column('deadline', DateTime),
+    Column('user', String),
+    Column('is_deleted', Boolean, default=False)
 )
 
 # metadata.drop_all(settings.sync_engine)

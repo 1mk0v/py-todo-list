@@ -1,18 +1,6 @@
-from pydantic import BaseModel
-from datetime import datetime
+from models import Event
 
-
-class Event(BaseModel):
-    title:str
-    description:str
-    status_id: int
-    deadline:datetime
-
+class InsertingProject(Event):
+    user:str
 class Project(Event):
     id: int
-
-class InsertingTask(Event):
-    project_id:int
-
-class Task(InsertingTask):
-    id:int

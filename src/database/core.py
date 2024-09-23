@@ -8,9 +8,10 @@ logger = logging.getLogger('uvicorn.error')
 
 class DBTableInterface():
 
-    def __init__(self, table:Table, engine:Engine) -> None:
+    def __init__(self, table:Table, engine:Engine, user:str = None) -> None:
         self.table = table
         self.engine = engine
+        self.user = user
 
     async def execute_query(self, query) -> CursorResult:
         try:
