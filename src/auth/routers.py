@@ -1,13 +1,15 @@
 from fastapi import Depends, HTTPException, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
-import logging
 from typing import Annotated, Any
-import jwt
+from config import ROOT_LOGIN
 from .config import SECRET_KEY, ALGORITHM
 from .depends import oauth2Scheme
 from .auth import Authenticator
 from .models import Token, UserWithPWD
-from .exceptions import AuthException
+from .exceptions import AuthException, PermissionDenied
+from exceptions import BaseAPIException
+import jwt
+import logging
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -85,4 +87,16 @@ def getUser(currentActiveUser: Annotated[str, Depends(getCurrentActiveUser)]):
             status_code=error.status_code,
             detail=error.message,
             headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+@router.post("/user/create")
+async def create_user(user:UserWithPWD, currentActiveUser: Annotated[str, Depends(getCurrentActiveUser)]) -> int:
+    try:
+        if not (currentActiveUser == ROOT_LOGIN):
+            raise PermissionDenied()
+        return (await userAuth.user_manager.create_user(login=user.login, password=user.password)).fetchone()._mapping['id']
+    except BaseAPIException as error:
+        raise HTTPException(
+            status_code=error.status_code,
+            detail=error.message
         )

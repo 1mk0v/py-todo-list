@@ -1,7 +1,6 @@
 from sqlalchemy import  Table, Engine, select, insert, update, delete, CursorResult
 from sqlalchemy import exc as SQLException
-from .exceptions import DBException, ConnectionTimeout,ConnectionBaseError
-from pydantic import SkipValidation, BaseModel, create_model, ConfigDict
+from .exceptions import DBException, ConnectionTimeout,ConnectionBaseError, IntegrityError
 import logging
 
 logger = logging.getLogger('uvicorn.error')
@@ -31,14 +30,16 @@ class DBTableInterface():
                 result = await conn.execute(stmt)
                 await conn.commit()
                 return result
-        except TimeoutError:
-            err = ConnectionTimeout(db_interface=self)
-            logger.error(err.message)
-            raise err
+        except TimeoutError as error:
+            logger.error(error)
+            raise ConnectionTimeout(db_interface=self)
+        except SQLException.IntegrityError as error:
+            logger.error(error)
+            detail = error.args[0].split('\n')[1].split(':  ')[1]
+            raise IntegrityError(message=detail)
         except Exception as error:
             logger.error(error)
-            raise ConnectionBaseError(db_interface=self)
-
+            raise DBException(db_interface=self)
 
     @property
     def base_query(self):
@@ -64,16 +65,11 @@ class DBTableInterface():
         try:
             stmt = insert(self.table).values(data).returning(self.table)
             return await self.execute_stmt(stmt)
-        except SQLException.IntegrityError as error:
-            detail:str = error.orig.args[0].split('\n')[1]
-            raise DBException(message=detail.split(':  ')[1])
-        except Exception as err:
-            logger.error(err)
-            raise DBException(db_interface=self)
+        except DBException as err:
+            raise err
 
     async def update(self, column, value, data:dict):
         try:
-            init_data = dict((await self.get_by_column(value, column)).mappings().one())
             stmt = (
                 update(self.table)
                     .where(self.table.c[column] == value)
@@ -94,7 +90,6 @@ class DBTableInterface():
 
     async def delete(self, value, column:str = 'id'):
         try:
-            init_data = dict((await self.get_by_column(value, column)).mappings().one())
             stmt = delete(self.table).where(self.table.c[column] == value).returning(self.table)
             return await self.execute_stmt(stmt)
         except SQLException as Error:

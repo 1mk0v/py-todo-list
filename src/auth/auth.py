@@ -2,8 +2,9 @@ from .config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from .models import UserWithPWD, UserWithHashedPWD
 from . import TokenCreater
 from . import exceptions as exc
+from exceptions import BaseAPIException
 from sqlalchemy import insert, select, update, and_, func
-from datetime import datetime, time
+from datetime import time
 from database.core import DBTableInterface
 from database.users_store import (
     settings as users_store_settings, 
@@ -44,17 +45,18 @@ class UsersManager:
                 logger.debug(f"Password for user {login} is incorrect!")
                 raise exc.IncorrectPasswordError()
             return user
-        except Exception as err:
-            logger.error(err)
+        except BaseAPIException as err:
+            logger.error(err.message)
             raise exc.AuthException()
 
     async def create_user(self, login:str, password:str):
         try:
+            logger.debug(f"Creating {login} user...")
             hashed_password = self._get_password_hash(password)
             return await self.users.add({ "login": login , "password": hashed_password })
-        except Exception as err:
-            logger.error(err)
-            raise exc.CreateUserError()
+        except BaseAPIException as err:
+            logger.warning(err.message)
+            raise exc.CreateUserError(message=err.message)
 
     def _verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)

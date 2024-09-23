@@ -18,5 +18,9 @@ class IncorrectPasswordError(AuthException):
         super().__init__(*args, message = message, status_code = status_code)
 
 class CreateUserError(AuthException):
-    def __init__(self, *args: object, message: str = "Can't create user", status_code=status.HTTP_400_BAD_REQUEST) -> None:
+    def __init__(self, *args: object, message: str = "Can't create user!", status_code=status.HTTP_400_BAD_REQUEST) -> None:
+        super().__init__(*args, message=message, status_code=status_code)
+
+class PermissionDenied(AuthException):
+    def __init__(self, *args: object, message: str = "Permission denied!", status_code=status.HTTP_400_BAD_REQUEST) -> None:
         super().__init__(*args, message=message, status_code=status_code)
