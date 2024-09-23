@@ -21,7 +21,7 @@ projects = Table(
     Column('title', String, unique=True),
     Column('description', String),
     Column('status_id', Integer, ForeignKey('statuses.id'), server_default="1"),
-    Column('deadline', DateTime),
+    Column('deadline', DateTime(timezone=True)),
     Column('user', String),
     Column('is_deleted', Boolean, default=False)
 )
@@ -34,7 +34,7 @@ tasks = Table(
     Column('title', String),
     Column('description', String),
     Column('status_id', Integer, ForeignKey('statuses.id')),
-    Column('deadline', DateTime),
+    Column('deadline', DateTime(timezone=True)),
     Column('user', String),
     Column('is_deleted', Boolean, default=False)
 )
