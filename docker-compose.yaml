@@ -9,4 +9,4 @@ services:
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_MULTIPLE_DATABASES=tmprojects,tmusers
+      - POSTGRES_MULTIPLE_DATABASES=${DB_PROJECTS_NAME},${DB_USERS_NAME}

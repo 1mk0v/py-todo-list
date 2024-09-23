@@ -39,8 +39,15 @@
    DB_PSWD=your_password
    DB_HOST=host
    DB_PORT=5432
-   DB_NAME=db_name
+   DB_PROJECTS_NAME =tmprojects
+   DB_USERS_NAME=tmusers
+
+   ROOT_LOGIN=root
+   ROOT_PASSWORD=password
+
+   PATH_TO_DEFAULT_STATUSES=path_to_statuses
    ```
+
 
    1. SECRET_KEY<span style="color:red">*</span><br>
    Создайте случайный секретный ключ, который будет использоваться для подписи токенов JWT.
@@ -48,6 +55,7 @@
    ```bash
    openssl rand -hex 32
    ```
+
 
    2. ALGORITHM<span style="color:red">*</span><br>
    Используется для подписи токена JWT
@@ -63,5 +71,22 @@
 
    4. Базы данных<span style="color:red">*</span><br>
    В приложении используется две базы данных.
-    - tmprojest: содержит себе информацию о проектах
-    - tmusers: содержит в себе информацию о сессиях и пользователях
+    - DB_PROJECTS_NAME: содержит себе информацию о проектах
+    - DB_USERS_NAME: содержит в себе информацию о сессиях и пользователях
+
+
+   5. ROOT пользователь<span style="color:red">*</span><br>
+    - Данным пользователем вы сможете залогиниться в данном приложении
+    - Используется для создания других пользователей
+  
+
+   6. Путь для JSON файла с данными по умолчанию<br>
+    - PATH_TO_DEFAULT_STATUSES: в данном файле хранятся данные о статусах
+        ```json
+        [
+            {
+                "value": "Имя статуса",
+                "description": "Описание статуса"
+            }
+        ]
+        ```
