@@ -10,3 +10,21 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_MULTIPLE_DATABASES=${DB_PROJECTS_NAME},${DB_USERS_NAME}
+  
+  taskmanager:
+    container_name: "taskmanager-app"
+    build:
+      context: .
+    env_file:
+      - .env
+    command: gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000
+    restart:
+      always
+    ports:
+      - 8888:8000
+    depends_on:
+      - db
+
+
+volumes:
+  postgres_data:
